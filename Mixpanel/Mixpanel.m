@@ -81,6 +81,7 @@
 @implementation Mixpanel
 
 static Mixpanel *sharedInstance = nil;
+static CTTelephonyNetworkInfo* telephonyNetworkInfo = nil;
 
 #pragma mark * Device info
 
@@ -107,8 +108,10 @@ static Mixpanel *sharedInstance = nil;
 
     [properties setValue:[NSNumber numberWithBool:[Mixpanel wifiAvailable]] forKey:@"$wifi"];
 
-    CTTelephonyNetworkInfo *networkInfo = [[[CTTelephonyNetworkInfo alloc] init] autorelease];
-    CTCarrier *carrier = [networkInfo subscriberCellularProvider];
+    if (!telephonyNetworkInfo) {
+      telephonyNetworkInfo = [[[CTTelephonyNetworkInfo alloc] init] retain];
+    }
+    CTCarrier *carrier = [telephonyNetworkInfo subscriberCellularProvider];
 
     if (carrier.carrierName.length) {
         [properties setValue:carrier.carrierName forKey:@"$carrier"];
